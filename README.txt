@@ -1,1 +1,1 @@
-This Folder contains the exercise solutions for Part0 of the course.
+This repository contains the exercise solutions for the course.
