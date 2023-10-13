@@ -7,7 +7,7 @@ sequenceDiagram
     activate server
 
     Note right of browser: We send the note as JSON data: 
-    {"content": "testest2","date": "2023-10-13T18:15:04.876Z"}
+    Note right of browser: {"content": "testest2","date": "2023-10-13T18:15:04.876Z"}
 
     server-->>browser: Status code 201 created
     deactivate server
