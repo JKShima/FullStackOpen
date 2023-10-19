@@ -52,7 +52,7 @@ const App = () => {
       <div>debug: {newName}</div>
       <h2>Numbers</h2>
       <div>{persons.map(props =>
-        <Persons key={props.id} name={props.name}/>)}
+        <Persons key={props.name} name={props.name}/>)}
       </div>
     </div>
   )
