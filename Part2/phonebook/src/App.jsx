@@ -12,7 +12,7 @@ const App = () => {
   const [persons, setPersons] = useState([
     { name: 'Arto Hellas' }, { name: 'Jose Javier'}
   ]) 
-  
+
   const [newName, setNewName] = useState('')
 
   const addPerson = (event) => {
@@ -21,8 +21,17 @@ const App = () => {
       name: newName
     }
 
-    setPersons(persons.concat(personObject))
-    setNewName('')
+    const checkNames = persons.find(props => props.name.toLowerCase() === personObject.name.toLowerCase())
+    //console.log(checkNames)
+
+    if (checkNames){
+      window.alert(`${newName} is already added to phonebook`)
+    }
+    else{
+      setPersons(persons.concat(personObject))
+      setNewName('')
+    }
+    
   }
 
   const handlePersonChange = (event) => {
@@ -42,8 +51,9 @@ const App = () => {
       </form>
       <div>debug: {newName}</div>
       <h2>Numbers</h2>
-      <p>{persons.map(props =>
-        <Persons name={props.name}/>)}</p>
+      <div>{persons.map(props =>
+        <Persons key={props.id} name={props.name}/>)}
+      </div>
     </div>
   )
 }
