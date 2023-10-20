@@ -31,11 +31,26 @@ const App = () => {
     }
 
     const checkNames = persons.find(props => props.name.toLowerCase() === personObject.name.toLowerCase())
+    const changedPerson = {...checkNames, number: newNumber}
     //console.log(checkNames)
 
-    if (checkNames){
+    // If the person is already in the phonebook
+    if (checkNames && checkNames.number === personObject.number){
       window.alert(`${newName} is already added to phonebook`)
     }
+    // The person exists but different number -> update
+    else if (checkNames && checkNames.number !== personObject.number){
+      if(window.confirm(`${checkNames.name} is already added to phonebook, replace the old number with a new one?`)){
+        personService
+          .updatePerson(checkNames.id, personObject)
+          .then(response => {
+            setPersons(persons.map(props => props.id !== checkNames.id ? props : response))
+            setNewName('')
+            setNewNumber('')
+          })
+      }
+    }
+    // The person is new -> create
     else{
       personService
         .createPersons(personObject)
