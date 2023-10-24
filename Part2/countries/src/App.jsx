@@ -6,6 +6,7 @@ import Filter from './components/Filter'
 function App() {
   const [countries, setCountries] = useState([])
   const [countryFilter, setCountryFilter] = useState('')
+  const [weather, setWeather] = useState([])
 
   const handleFilterChange = (event) => {
     const query = event.target.value
@@ -22,6 +23,15 @@ function App() {
   }, [])
   //console.log('render ', countries.length, 'countries')
   //console.log(countries)
+
+  useEffect(() => {
+    axios
+      .get('https://api.weatherapi.com/v1/current.json?key=1b97e70659ad47738b5175204232410&q=London&aqi=no')
+      .then(response => {
+        setWeather(response.data)
+      })
+  }, [])
+  console.log(weather)
 
   const filteredCountries = countries.map(props => props.name.common.toLowerCase().includes(countryFilter.toLowerCase()))
         ? countries.filter(props => props.name.common.toLowerCase().includes(countryFilter.toLowerCase()))
