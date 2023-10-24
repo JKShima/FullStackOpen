@@ -6,12 +6,12 @@ const CountryWeather = ({country}) => {
     const [weather, setWeather] = useState(null)
 
     useEffect(() => {
-        const apiKey = '1b97e70659ad47738b5175204232410'
+        const apiKey = import.meta.env.VITE_WEATHER_API_KEY
         axios
           .get(`https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${country.capital}&aqi=no`)
           .then(response => {
             setWeather(response.data)
-            console.log(response.data)
+            //console.log(response.data)
           })
       }, [])
 
