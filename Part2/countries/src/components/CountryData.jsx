@@ -1,5 +1,5 @@
 const CountryData = ({country}) => {
-    console.log('Country Data')
+    //console.log('Country Data')
     return (
         <div>
             <h1>{country.name.common}</h1>
