@@ -80,6 +80,8 @@ const generateId = () => {
 
 app.post('/api/persons', (request, response, next) => {
     const body = request.body
+    console.log(body)
+    /*
     const checkName = persons.find(props => props.name.toLowerCase() === body.name.toLowerCase())
 
     if(checkName){
@@ -99,15 +101,20 @@ app.post('/api/persons', (request, response, next) => {
             error: 'Number missing'
         })
     }
-
-    const person = {
-        name: body.name,
-        number: body.number,
-        id: generateId(),
+    */
+    
+    if (body.name === undefined || body.number === undefined){
+        return response.status(400).json({error: 'content missing'})
     }
 
-    persons = persons.concat(person)
-    response.json(person)
+    const person = new Person({
+        name: body.name,
+        number: body.number,
+    })
+
+    person.save().then(savedPerson => {
+        response.json(savedPerson)
+    })
 })
 
 const PORT = process.env.PORT || 3001
