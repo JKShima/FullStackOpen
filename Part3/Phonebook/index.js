@@ -39,14 +39,14 @@ let persons = [
 
 var current_time = new Date();
 
-app.get('/info', (request, response, next) => {
+app.get('/info', (request, response) => {
   response.send(`<div>
                     <p>Phonebook has info for ${persons.length} people.</p>
                     <p>${current_time}</p>
                 <div>`)
 })
 
-app.get('/api/persons', (request, response, next) => {
+app.get('/api/persons', (request, response) => {
     Person.find({}).then(persons => {
         response.json(persons)
     })
@@ -62,13 +62,15 @@ app.get('/api/persons/:id', (request, response, next) => {
             response.status(404).end()
         }
     })
+    .catch((error) => next(error))
 })
 
-app.delete('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    persons = persons.filter(person => person.id !== id)
-  
-    response.status(204).end()
+app.delete('/api/persons/:id', (request, response, next) => {
+    Person.findByIdAndRemove(request.params.id)
+        .then(result => {
+            response.status(204).end()
+        })
+        .catch((error) => next(error))
 })
 
 const generateId = () => {
@@ -115,6 +117,7 @@ app.post('/api/persons', (request, response, next) => {
     person.save().then(savedPerson => {
         response.json(savedPerson)
     })
+    .catch((error) => next(error))
 })
 
 const PORT = process.env.PORT || 3001
