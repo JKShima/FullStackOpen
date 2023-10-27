@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useState, useEffect } from 'react'
 import personService from './services/persons'
 import PersonsList from './components/PersonsList'
@@ -34,6 +35,7 @@ const App = () => {
       number: newNumber
     }
 
+    // eslint-disable-next-line react/prop-types
     const checkNames = persons.find(props => props.name.toLowerCase() === personObject.name.toLowerCase())
     const changedPerson = {...checkNames, number: newNumber}
     //console.log(checkNames)
@@ -94,7 +96,7 @@ const App = () => {
     if (window.confirm(`Delete ${person.name}?`)){
       personService
         .deletePerson(person.id)
-        .then(response => {
+        .then(() => {
           const updatedPersonsList = persons.filter((props) => props.id !== person.id)
           setPersons(updatedPersonsList)
           setNotificationType('success')
@@ -103,7 +105,7 @@ const App = () => {
             setNotificationMessage(null)
           }, 5000)
         })
-        .catch(error => {
+        .catch(() => {
           setNotificationType('error')
           setNotificationMessage(`Note: ${person.name} was already removed from the server`)
           setTimeout(() => {
