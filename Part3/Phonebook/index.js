@@ -39,11 +39,15 @@ let persons = [
 
 var current_time = new Date();
 
-app.get('/info', (request, response) => {
-  response.send(`<div>
+app.get('/info', (request, response, next) => {
+    Person.find({}).then(persons => {
+        response.send(`<div>
                     <p>Phonebook has info for ${persons.length} people.</p>
                     <p>${current_time}</p>
                 <div>`)
+    })
+    .catch((error) => next(error))
+    
 })
 
 app.get('/api/persons', (request, response) => {
