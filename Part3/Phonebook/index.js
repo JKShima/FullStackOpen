@@ -80,7 +80,7 @@ const generateId = () => {
 
 app.post('/api/persons', (request, response, next) => {
     const body = request.body
-    console.log(body)
+
     /*
     const checkName = persons.find(props => props.name.toLowerCase() === body.name.toLowerCase())
 
