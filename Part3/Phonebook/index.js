@@ -135,6 +135,29 @@ app.put('/api/persons/:id', (request, response, next) => {
         .catch(error => next(error))
 })
 
+const unknownEndPoint = (request, response) => {
+    response.status(404).send({error: 'unknown endpoint'})
+}
+
+app.use(unknownEndPoint)
+
+const errorHandler = (error, request, response, next) => {
+    console.error(error.message)
+  
+    if (error.name === 'CastError') {
+      return response.status(400).send({ error: 'malformatted id' })
+    } else if (error.name === 'ValidationError'){
+        return response.status(400).json({error: error.message})
+    }
+  
+    next(error)
+  }
+  
+// this has to be the last loaded middleware.
+app.use(errorHandler)
+
+
+
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
