@@ -1,3 +1,6 @@
+const lodash = require('lodash')
+const { count } = require('../../Part3/Phonebook/models/person')
+
 const dummy = (blogs) => {
     return 1
   }
@@ -26,9 +29,54 @@ const favoriteBlog = (blogs) => {
         })
     }
 }
+
+const mostBlogs = (blogs) => {
+    if (blogs.length === 0){
+        return null 
+    } else {
+        const countAuthor = lodash.countBy(blogs, 'author')
+        const topAuthor = Object.keys(countAuthor).reduce(
+            (prev, current) => {
+                return countAuthor[prev] > countAuthor[current] ? prev : current
+            }
+        )
+        return ({
+            author: topAuthor,
+            blogs: countAuthor[topAuthor]
+        })
+        
+    }
+}
+
+const mostLikes = (blogs) => {
+    if (blogs.length === 0){
+        return null
+    } else {
+        const groupBlogsAuthor = lodash.groupBy(blogs, 'author')
+        const likesAuthor = lodash.map(groupBlogsAuthor, author => {
+            return ({
+                author: author[0].author,
+                likes: lodash.sumBy(author, 'likes')
+            })
+        })
+        
+        const mostLikesAuthor = likesAuthor.reduce(
+            (prev, current) => {
+                return prev.likes > current.likes ? prev : current
+            }
+        )
+
+        return ({
+            author: mostLikesAuthor.author,
+            likes: mostLikesAuthor.likes
+        })
+    }
+}
   
 module.exports = {
     dummy,
     totalLikes,
-    favoriteBlog
+    favoriteBlog,
+    mostBlogs,
+    mostLikes
 }
