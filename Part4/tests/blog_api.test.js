@@ -36,21 +36,6 @@ test('a specific blog is within the returned blogs', async () => {
     )
 })
 
-test('blog without title is not added', async () => {
-    const newBlog = {
-        likes: 15
-    }
-
-    await api
-        .post('/api/blogs')
-        .send(newBlog)
-        .expect(400)
-
-    const blogsAtEnd = await helper.blogsInDb()
-
-    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
-})
-
 test('a valid blog can be added', async () => {
     const newBlog = {
       title: 'Canonical string reduction',
@@ -74,6 +59,21 @@ test('a valid blog can be added', async () => {
     )
 })
 
+test('blog without title is not added', async () => {
+    const newBlog = {
+        likes: 15
+    }
+
+    await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(400)
+
+    const blogsAtEnd = await helper.blogsInDb()
+
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+})
+
 test('the unique identificer property of the blog post is named id', async () => {
     const blogsAtStart = await helper.blogsInDb()
 
@@ -81,6 +81,26 @@ test('the unique identificer property of the blog post is named id', async () =>
 
     expect(blogsId[0]).toBeDefined()
 
+})
+
+
+test('verify that if the likes property is missing, it will default to value 0', async () => {
+    const newBlog = {
+        title: 'New Blog',
+        author: 'New Author',
+        url: 'www.newBlog.com',
+    }
+
+    await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+    
+    const blogsAtEnd = await helper.blogsInDb()
+
+    const likes = blogsAtEnd.map(l => l.likes)
+    expect(likes).toContain(0)
 })
 
 afterAll(async () => {
