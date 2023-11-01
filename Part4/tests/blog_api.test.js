@@ -73,6 +73,15 @@ test('a valid blog can be added', async () => {
     )
 })
 
+test('the unique identificer property of the blog post is named id', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+
+    const blogsId = blogsAtStart.map(blog => blog.id)
+
+    expect(blogsId[0]).toBeDefined()
+
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })
