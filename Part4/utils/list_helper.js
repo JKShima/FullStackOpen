@@ -1,5 +1,4 @@
 const lodash = require('lodash')
-const { count } = require('../../Part3/Phonebook/models/person')
 
 const dummy = (blogs) => {
     return 1
