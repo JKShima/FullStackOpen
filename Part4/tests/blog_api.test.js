@@ -103,6 +103,44 @@ test('verify that if the likes property is missing, it will default to value 0',
     expect(likes).toContain(0)
 })
 
+test('verify that if the title property is missing, the respond will be status 400', async () => {
+    const newBlog = {
+        author: 'New Author 2',
+        url: 'www.newBlog2.com',
+        likes: 1
+    }
+
+    await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(400)
+        .expect('Content-Type', /application\/json/)
+    
+    const blogsAtEnd = await helper.blogsInDb()
+
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+    //console.log('No title')
+})
+
+test('verify that if the url property is missing, the respond will be status 400', async () => {
+    const newBlog = {
+        title: 'New Blog 3',
+        author: 'New Author 3',
+        likes: 2
+    }
+
+    await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(400)
+        .expect('Content-Type', /application\/json/)
+    
+    const blogsAtEnd = await helper.blogsInDb()
+
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+    //console.log('No url')
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })
