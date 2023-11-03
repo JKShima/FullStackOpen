@@ -17,6 +17,21 @@ beforeEach(async () => {
     }
 })
 
+beforeEach(async () => {
+    await User.deleteMany({})
+
+    const passwordHash = await bcrypt.hash('qwerty',10)
+        const user = new User ({
+            username: 'user',
+            name: 'user',
+            blogs: [],
+            passwordHash
+        })
+    
+    await user.save()
+})
+
+
 describe('when there is initially some blogs saved', () => {
     test('blogs are returned as json', async () => {
         await api
@@ -73,7 +88,15 @@ describe('viewing a specific blog', () => {
 })
 
 describe('addition of a new blog', () => {
+
     test('a valid blog can be added', async () => {
+        const user = {
+            username: 'user',
+            password: 'qwerty'
+        }
+    
+        const loginUser = await api.post('/api/login').send(user)
+
         const newBlog = {
             title: 'Canonical string reduction',
             author: 'Edsger W. Dijkstra',
@@ -83,6 +106,7 @@ describe('addition of a new blog', () => {
       
         await api
             .post('/api/blogs')
+            .set('Authorization', `Bearer ${loginUser.body.token}`)
             .send(newBlog)
             .expect(201)
             .expect('Content-Type', /application\/json/)
@@ -97,12 +121,20 @@ describe('addition of a new blog', () => {
     })
 
     test('blog without title is not added', async () => {
+        const user = {
+            username: 'user',
+            password: 'qwerty'
+        }
+    
+        const loginUser = await api.post('/api/login').send(user)
+
         const newBlog = {
             likes: 15
         }
     
         await api
             .post('/api/blogs')
+            .set('Authorization', `Bearer ${loginUser.body.token}`)
             .send(newBlog)
             .expect(400)
     
@@ -122,6 +154,13 @@ describe('addition of a new blog', () => {
     
     
     test('verify that if the likes property is missing, it will default to value 0', async () => {
+        const user = {
+            username: 'user',
+            password: 'qwerty'
+        }
+    
+        const loginUser = await api.post('/api/login').send(user)
+
         const newBlog = {
             title: 'New Blog',
             author: 'New Author',
@@ -130,6 +169,7 @@ describe('addition of a new blog', () => {
     
         await api
             .post('/api/blogs')
+            .set('Authorization', `Bearer ${loginUser.body.token}`)
             .send(newBlog)
             .expect(201)
             .expect('Content-Type', /application\/json/)
@@ -141,6 +181,13 @@ describe('addition of a new blog', () => {
     })
     
     test('verify that if the title property is missing, the respond will be status 400', async () => {
+        const user = {
+            username: 'user',
+            password: 'qwerty'
+        }
+    
+        const loginUser = await api.post('/api/login').send(user)
+
         const newBlog = {
             author: 'New Author 2',
             url: 'www.newBlog2.com',
@@ -149,6 +196,7 @@ describe('addition of a new blog', () => {
     
         await api
             .post('/api/blogs')
+            .set('Authorization', `Bearer ${loginUser.body.token}`)
             .send(newBlog)
             .expect(400)
             .expect('Content-Type', /application\/json/)
@@ -160,6 +208,13 @@ describe('addition of a new blog', () => {
     })
     
     test('verify that if the url property is missing, the respond will be status 400', async () => {
+        const user = {
+            username: 'user',
+            password: 'qwerty'
+        }
+    
+        const loginUser = await api.post('/api/login').send(user)
+
         const newBlog = {
             title: 'New Blog 3',
             author: 'New Author 3',
@@ -168,6 +223,7 @@ describe('addition of a new blog', () => {
     
         await api
             .post('/api/blogs')
+            .set('Authorization', `Bearer ${loginUser.body.token}`)
             .send(newBlog)
             .expect(400)
             .expect('Content-Type', /application\/json/)
@@ -180,19 +236,44 @@ describe('addition of a new blog', () => {
 })
 
 describe('deletion of a blog', () => {
+
     test('succeeds with status code 204 if id is valid', async () => {
-        const blogsAtStart = await helper.blogsInDb()
+        await Blog.deleteMany({})
+
+        const user = {
+            username: 'user',
+            password: 'qwerty'
+        }
+    
+        const loginUser = await api.post('/api/login').send(user)
+
+        const newBlog = {
+            title: 'Canonical string reduction',
+            author: 'Edsger W. Dijkstra',
+            url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
+            likes: 12
+        }
+      
+        await api
+            .post('/api/blogs')
+            .set('Authorization', `Bearer ${loginUser.body.token}`)
+            .send(newBlog)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
+
+        const blogsAtStart = await Blog.find({}).populate("user")
         const blogToDelete = blogsAtStart[0]
 
+        console.log(blogToDelete)
+        
         await api
             .delete(`/api/blogs/${blogToDelete.id}`)
+            .set('Authorization', `Bearer ${loginUser.body.token}`)
             .expect(204)
         
         const blogsAtEnd = await helper.blogsInDb()
 
-        expect(blogsAtEnd).toHaveLength(
-            helper.initialBlogs.length - 1
-        )
+        expect(blogsAtEnd).toHaveLength(0)
 
         const titles = blogsAtEnd.map(t => t.title)
 
