@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
+import Notification from './components/Notification'
+
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -13,6 +15,9 @@ const App = () => {
   const [newTitle, setNewTitle] = useState('')
   const [newAuthor, setNewAuthor] = useState('')
   const [newUrl, setNewUrl] = useState('')
+
+  const [notificationMessage, setNotificationMessage] = useState(null)
+  const [notificationType, setNotificationType] = useState('')
 
   useEffect(() => {
     blogService
@@ -46,6 +51,18 @@ const App = () => {
         setNewTitle('')
         setNewAuthor('')
         setNewUrl('')
+        setNotificationType('success')
+        setNotificationMessage(`A new blog: ${blogObject.title} by ${blogObject.author} added successfully`)
+        setTimeout(() => {
+          setNotificationMessage(null)
+        }, 5000)
+      })
+      .catch(error => {
+        setNotificationType('error')
+        setNotificationMessage(error.response.data.error)
+        setTimeout(() => {
+          setNotificationMessage(null)
+        }, 5000)
       })
   }
 
@@ -77,7 +94,11 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception){
-      console.log('Error loging')
+      setNotificationType('error')
+      setNotificationMessage('Wrong username or password')
+      setTimeout(() => {
+        setNotificationMessage(null)
+      }, 5000)
     }
   }
 
@@ -92,6 +113,7 @@ const App = () => {
     return(
       <div>
         <h2>Log in to application</h2>
+        <Notification message = {notificationMessage} type = {notificationType}/>
         <form onSubmit={handleLogin}>
           <div>
             username
@@ -111,6 +133,7 @@ const App = () => {
     return (
       <div>
           <h2>Blogs</h2>
+          <Notification message = {notificationMessage} type = {notificationType}/>
           <p>{user.name} logged in</p>
           <button onClick={handleLogOut}>log out</button>
           <h2>Create new</h2>
