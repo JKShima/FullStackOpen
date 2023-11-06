@@ -49,6 +49,8 @@ const App = () => {
   const handleLogOut = () => {
     window.localStorage.clear()
     setUser(null)
+    setUsername('')
+    setPassword('')
   }
 
   const loginForm = () => {
