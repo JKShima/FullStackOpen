@@ -57,6 +57,18 @@ const App = () => {
       })
   }
 
+  const updateLikes = async (blogId, blogObject) => {
+    const updatedBlog = await blogService.updateBlog(blogId, blogObject)
+    setNotificationType('success')
+    setNotificationMessage(`The blog: ${blogObject.title} by ${blogObject.author} was liked`)
+    setTimeout(() => {
+      setNotificationMessage(null)
+    }, 5000)
+    setBlogs(
+      blogs.map((oldBlog) => oldBlog.id === blogId ? updatedBlog : oldBlog)
+    )
+  }
+
   const handleLogin = async (event) => {
     event.preventDefault()
     try {
@@ -119,7 +131,7 @@ const App = () => {
           <BlogForm createBlog={addBlog}/>
         </Togglable>
         {blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} user={user}/>
+          <Blog key={blog.id} blog={blog} updateLikes={updateLikes}/>
         )}
       </div>
     )
