@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
+import Togglable from './components/Togglable'
 
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -11,10 +12,6 @@ const App = () => {
   const [user, setUser] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-
-  const [newTitle, setNewTitle] = useState('')
-  const [newAuthor, setNewAuthor] = useState('')
-  const [newUrl, setNewUrl] = useState('')
 
   const [notificationMessage, setNotificationMessage] = useState(null)
   const [notificationType, setNotificationType] = useState('')
@@ -36,21 +33,15 @@ const App = () => {
     }
   }, [])
 
-  const addBlog = (event) => {
-    event.preventDefault()
-    const blogObject = {
-      title: newTitle,
-      author: newAuthor,
-      url: newUrl
-    }
+  const blogFormRef = useRef()
+
+  const addBlog = (blogObject) => {
+    blogFormRef.current.toggleVisibility()
 
     blogService
       .createBlog(blogObject)
       .then(returnedBlog => {
         setBlogs(blogs.concat(returnedBlog))
-        setNewTitle('')
-        setNewAuthor('')
-        setNewUrl('')
         setNotificationType('success')
         setNotificationMessage(`A new blog: ${blogObject.title} by ${blogObject.author} added successfully`)
         setTimeout(() => {
@@ -64,18 +55,6 @@ const App = () => {
           setNotificationMessage(null)
         }, 5000)
       })
-  }
-
-  const handleTitleChange = (event) => {
-    setNewTitle(event.target.value)
-  }
-
-  const handleAuthorChange = (event) => {
-    setNewAuthor(event.target.value)
-  }
-
-  const handleUrlChange = (event) => {
-    setNewUrl(event.target.value)
   }
 
   const handleLogin = async (event) => {
@@ -130,25 +109,18 @@ const App = () => {
   }
 
   const blogList = () => {
-    return (
+    return(
       <div>
-          <h2>Blogs</h2>
-          <Notification message = {notificationMessage} type = {notificationType}/>
-          <p>{user.name} logged in</p>
-          <button onClick={handleLogOut}>log out</button>
-          <h2>Create new</h2>
-          <BlogForm 
-            addBlog = {addBlog}
-            newTitle= {newTitle}
-            newAuthor= {newAuthor}
-            newUrl= {newUrl}
-            handleTitleChange = {handleTitleChange}
-            handleAuthorChange = {handleAuthorChange}
-            handleUrlChange = {handleUrlChange}
-          />
-          {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} />
-          )}
+        <h2>Blogs</h2>
+        <Notification message = {notificationMessage} type = {notificationType}/>
+        <p>{user.name} logged in</p>
+        <button onClick={handleLogOut}>log out</button>
+        <Togglable buttonLabel="New Blog" ref={blogFormRef}>
+          <BlogForm createBlog={addBlog}/>
+        </Togglable>
+        {blogs.map(blog =>
+          <Blog key={blog.id} blog={blog} />
+        )}
       </div>
     )
   }
