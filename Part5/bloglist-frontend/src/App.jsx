@@ -58,15 +58,43 @@ const App = () => {
   }
 
   const updateLikes = async (blogId, blogObject) => {
-    const updatedBlog = await blogService.updateBlog(blogId, blogObject)
-    setNotificationType('success')
-    setNotificationMessage(`The blog: ${blogObject.title} by ${blogObject.author} was liked`)
-    setTimeout(() => {
-      setNotificationMessage(null)
-    }, 5000)
-    setBlogs(
-      blogs.map((oldBlog) => oldBlog.id === blogId ? updatedBlog : oldBlog)
-    )
+    try {
+      const updatedBlog = await blogService.updateBlog(blogId, blogObject)
+      setNotificationType('success')
+      setNotificationMessage(`The blog: ${blogObject.title} by ${blogObject.author} was liked`)
+      setTimeout(() => {
+        setNotificationMessage(null)
+      }, 5000)
+      setBlogs(
+        blogs.map((oldBlog) => oldBlog.id === blogId ? updatedBlog : oldBlog)
+      )
+    } catch (error){
+        setNotificationType('error')
+        setNotificationMessage('Cannot like blog')
+        setTimeout(() => {
+          setNotificationMessage(null)
+        }, 5000)
+    }
+  }
+
+  const deleteBlog = async (blogId) => {
+    try {
+      await blogService.deleteBlog(blogId)
+
+      const updatedBlogList = blogs.filter((blog) => blog.id !== blogId)
+      setBlogs(updatedBlogList)
+      setNotificationType('success')
+      setNotificationMessage(`The blog was removed`)
+      setTimeout(() => {
+        setNotificationMessage(null)
+      }, 5000)
+    } catch (error){
+        setNotificationType('error')
+        setNotificationMessage('Cannot delete blog')
+        setTimeout(() => {
+          setNotificationMessage(null)
+        }, 5000)
+    }
   }
 
   const handleLogin = async (event) => {
@@ -133,7 +161,7 @@ const App = () => {
         {blogs
           .sort((a, b) => b.likes - a.likes)
           .map(blog =>
-            <Blog key={blog.id} blog={blog} updateLikes={updateLikes}/>
+            <Blog key={blog.id} blog={blog} updateLikes={updateLikes} deleteBlog={deleteBlog} user={user}/>
           )}
       </div>
     )
