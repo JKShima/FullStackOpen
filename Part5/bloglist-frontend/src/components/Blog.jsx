@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, user }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -10,6 +10,9 @@ const Blog = ({ blog }) => {
   }
 
   const [visible, setVisible] = useState(false)
+  
+  console.log(user)
+  console.log(blog.user)
 
   const hideWhenVisible = { display: visible ? 'none' : '' }
   const showWhenVisible = { display: visible ? '' : 'none' }
@@ -17,6 +20,8 @@ const Blog = ({ blog }) => {
   const toggleVisibility = () => {
     setVisible(!visible)
   }
+  
+  
 
   return(
     <div style={blogStyle}>
