@@ -21,7 +21,7 @@ const App = () => {
       .getAllBlogs()
       .then(blogs => {
         setBlogs( blogs )
-      })  
+      })
   }, [])
 
   useEffect(() => {
@@ -69,11 +69,11 @@ const App = () => {
         blogs.map((oldBlog) => oldBlog.id === blogId ? updatedBlog : oldBlog)
       )
     } catch (error){
-        setNotificationType('error')
-        setNotificationMessage('Cannot like blog')
-        setTimeout(() => {
-          setNotificationMessage(null)
-        }, 5000)
+      setNotificationType('error')
+      setNotificationMessage('Cannot like blog')
+      setTimeout(() => {
+        setNotificationMessage(null)
+      }, 5000)
     }
   }
 
@@ -84,16 +84,16 @@ const App = () => {
       const updatedBlogList = blogs.filter((blog) => blog.id !== blogId)
       setBlogs(updatedBlogList)
       setNotificationType('success')
-      setNotificationMessage(`The blog was removed`)
+      setNotificationMessage('The blog was removed')
       setTimeout(() => {
         setNotificationMessage(null)
       }, 5000)
     } catch (error){
-        setNotificationType('error')
-        setNotificationMessage('Cannot delete blog')
-        setTimeout(() => {
-          setNotificationMessage(null)
-        }, 5000)
+      setNotificationType('error')
+      setNotificationMessage('Cannot delete blog')
+      setTimeout(() => {
+        setNotificationMessage(null)
+      }, 5000)
     }
   }
 
@@ -136,11 +136,11 @@ const App = () => {
         <form onSubmit={handleLogin}>
           <div>
             username
-            <input type="text" value={username} name="Username" onChange={({target}) => setUsername(target.value)}></input>
+            <input type="text" value={username} name="Username" onChange={ ({ target }) => setUsername(target.value) }></input>
           </div>
           <div>
             password
-            <input type="password" value={password} name="Password" onChange={({target}) => setPassword(target.value)}></input>
+            <input type="password" value={password} name="Password" onChange={ ({ target }) => setPassword(target.value) }></input>
           </div>
           <button type="submit">login</button>
         </form>
