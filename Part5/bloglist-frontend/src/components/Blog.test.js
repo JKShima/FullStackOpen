@@ -30,6 +30,22 @@ describe('Testing Blog', () => {
         'Test first blog - Robert Martin'
     )
   })
+
+  // Testing only title and author
+  test('render title and author, no url or likes', () => {
+    const { container } = render(<Blog blog={blog} user={user}/>)
+
+    const blogHidden = container.querySelector('.blog')
+    expect(blogHidden).toHaveTextContent(
+      'Test first blog - Robert Martin'
+    )
+
+    const urlHidden = container.querySelector(blog.url)
+    expect(urlHidden).not.toBeInTheDocument()
+
+    const likesHidden = container.querySelector('likes')
+    expect(likesHidden).not.toBeInTheDocument()
+  })
 })
 
 
