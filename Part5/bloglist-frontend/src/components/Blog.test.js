@@ -22,6 +22,8 @@ describe('Testing Blog', () => {
     name: 'john'
   }
 
+  const mockHandler = jest.fn()
+
   // Testing render content
   test('renders content', () => {
     const { container } = render(<Blog blog={blog} user={user}/>)
@@ -59,6 +61,22 @@ describe('Testing Blog', () => {
     const div = container.querySelector('.blogVisible')
     expect(div).toBeVisible()
 
+  })
+
+  // Testing clicking like button
+  test('if the like button is clicked twice, event handler is called twice', async () => {
+    render(<Blog blog={blog} user={user} updateLikes={mockHandler}/>)
+
+    const userClick = userEvent.setup()
+    const button = screen.getByText('View')
+    await userClick.click(button)
+
+    const likeClick = userEvent.setup()
+    const likeButton = screen.getByText('like')
+    await likeClick.click(likeButton)
+    await likeClick.click(likeButton)
+
+    expect(mockHandler.mock.calls).toHaveLength(2)
   })
 })
 
