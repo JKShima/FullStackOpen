@@ -1,6 +1,7 @@
 import React from 'react'
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import Blog from './Blog'
 
 // Testing Blogs
@@ -11,8 +12,8 @@ describe('Testing Blog', () => {
     url: 'www.firstest.com',
     likes: 5,
     user: {
-        username: 'john',
-        name: 'john',
+      username: 'john',
+      name: 'john',
     }
   }
 
@@ -27,7 +28,7 @@ describe('Testing Blog', () => {
 
     const div = container.querySelector('.blog')
     expect(div).toHaveTextContent(
-        'Test first blog - Robert Martin'
+      'Test first blog - Robert Martin'
     )
   })
 
@@ -35,17 +36,20 @@ describe('Testing Blog', () => {
   test('render title and author, no url or likes', () => {
     const { container } = render(<Blog blog={blog} user={user}/>)
 
-    const blogHidden = container.querySelector('.blog')
+    const blogHidden = container.querySelector('.blogHidden')
     expect(blogHidden).toHaveTextContent(
       'Test first blog - Robert Martin'
     )
 
-    const urlHidden = container.querySelector(blog.url)
-    expect(urlHidden).not.toBeInTheDocument()
+    const urlHidden = screen.queryByText(blog.url)
+    expect(urlHidden).not.toBeVisible()
 
-    const likesHidden = container.querySelector('likes')
-    expect(likesHidden).not.toBeInTheDocument()
+    const likesHidden = screen.queryByText('like')
+    expect(likesHidden).not.toBeVisible()
   })
+
+  // Testing url and likes after clicking view button
+
 })
 
 
