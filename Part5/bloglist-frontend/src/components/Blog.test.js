@@ -78,6 +78,7 @@ describe('Testing Blog', () => {
 
     expect(mockHandler.mock.calls).toHaveLength(2)
   })
+
 })
 
 
