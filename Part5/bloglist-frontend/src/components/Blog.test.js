@@ -49,7 +49,17 @@ describe('Testing Blog', () => {
   })
 
   // Testing url and likes after clicking view button
+  test('render url and likes when clicking view button', async () => {
+    const { container } = render(<Blog blog={blog} user={user}/>)
 
+    const userClick = userEvent.setup()
+    const button = screen.getByText('View')
+    await userClick.click(button)
+
+    const div = container.querySelector('.blogVisible')
+    expect(div).toBeVisible()
+
+  })
 })
 
 
