@@ -11,6 +11,7 @@ describe('Blog app', function() {
     cy.get('#password').type('johnsmith')
     cy.get('#login-button').click()
 
+    cy.contains('Blogs')
     cy.contains('john smith logged in')
   })
 })
