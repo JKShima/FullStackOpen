@@ -68,6 +68,11 @@ describe('Blog app', function() {
         cy.contains('Blog Cypress 3').parent().find('button').eq(0).click()
         cy.contains('Blog Cypress 3').parent().find('button').eq(2).click()
       })
+
+      it('user that created a blog can delete it', function() {
+        cy.contains('Blog Cypress 2').parent().find('button').eq(0).click()
+        cy.contains('Blog Cypress 2').parent().find('button').eq(3).click()
+      })
     })
   })
 })
