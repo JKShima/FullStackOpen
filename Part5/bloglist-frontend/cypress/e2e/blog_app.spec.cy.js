@@ -73,6 +73,18 @@ describe('Blog app', function() {
         cy.contains('Blog Cypress 2').parent().find('button').eq(0).click()
         cy.contains('Blog Cypress 2').parent().find('button').eq(3).should('exist').click()
       })
+
+      it('check blogs are ordered by likes', function() {
+        cy.contains('Blog Cypress 3').parent().find('button').eq(0).click()
+        cy.contains('Blog Cypress 3').parent().find('button').eq(2).click().wait(300)
+
+        cy.contains('Blog Cypress 2').parent().find('button').eq(0).click()
+        cy.contains('Blog Cypress 2').parent().find('button').eq(2).click().wait(200).click().wait(200).click()
+
+        cy.get('.blog').eq(0).should('contain', 'Blog Cypress 2')
+        cy.get('.blog').eq(1).should('contain', 'Blog Cypress 3')
+        cy.get('.blog').eq(2).should('contain', 'Blog Cypress 4')
+      })
     })
   })
 })
