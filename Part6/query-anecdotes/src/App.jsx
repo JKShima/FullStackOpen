@@ -10,18 +10,23 @@ const App = () => {
     console.log('vote')
   }
 
-  const result = useQuery({
-    queryKey : ['anecdotes'],
-    queryFN: getAnecdotes
+
+  const { isLoading, isError, data, error } = useQuery({
+    queryKey: ['anecdotes'],
+    queryFn: getAnecdotes,
+    retry: 1
   })
 
-  console.log(JSON.parse(JSON.stringify(result)))
 
-  if (result.isLoading) {
+  if (isLoading) {
     return <div>loading data...</div>
   }
 
-  const anecdotes = result.data
+  if (isError) {
+    return <span>Error: {error.message}</span>
+  }
+
+  const anecdotes = data
 
   return (
     <div>
