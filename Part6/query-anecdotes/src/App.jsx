@@ -14,7 +14,8 @@ const App = () => {
   const { isLoading, isError, data, error } = useQuery({
     queryKey: ['anecdotes'],
     queryFn: getAnecdotes,
-    retry: 1
+    retry: 1,
+    refetchOnWindowFocus: false
   })
 
 
