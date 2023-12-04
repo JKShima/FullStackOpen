@@ -1,11 +1,10 @@
 import { useState } from 'react'
+import { useField } from './hooks'
 
 import {
   Routes,
   Route,
   Link,
-  Navigate,
-  useParams,
   useNavigate,
   useMatch
 } from 'react-router-dom'
@@ -81,20 +80,6 @@ const Notification = ({ message }) => {
   )
 }
 
-const useField = (type) => {
-  const [value, setValue] = useState('')
-
-  const onChange = (event) => {
-    setValue(event.target.value)
-  }
-
-  return { 
-    type, 
-    value,
-    onChange
-  }
-}
-
 const CreateNew = (props) => {
   //const [content, setContent] = useState('')
   //const [author, setAuthor] = useState('')
@@ -120,15 +105,15 @@ const CreateNew = (props) => {
       <form onSubmit={handleSubmit}>
         <div>
           content
-          <input name='content' type={content.type} value={content.value} onChange={content.onChange} />
+          <input name='content' {...content} />
         </div>
         <div>
           author
-          <input name='author' type={author.type} value={author.value} onChange={author.onChange} />
+          <input name='author' {...author} />
         </div>
         <div>
           url for more info
-          <input name='info' type={info.type} value={info.value} onChange={info.onChange} />
+          <input name='info' {...info} />
         </div>
         <button>create</button>
       </form>
