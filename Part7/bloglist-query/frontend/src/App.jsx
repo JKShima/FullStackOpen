@@ -7,21 +7,25 @@ import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useNotificationDispatch } from './notificationContext'
+
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
-  const [notificationMessage, setNotificationMessage] = useState(null)
-  const [notificationType, setNotificationType] = useState('')
+  //const [notificationMessage, setNotificationMessage] = useState(null)
+  //const [notificationType, setNotificationType] = useState('')
+
+  const queryClient = useQueryClient()
+  const dispatch = useNotificationDispatch()
 
   useEffect(() => {
-    blogService
-      .getAllBlogs()
-      .then(blogs => {
-        setBlogs( blogs )
-      })
+    blogService.getAllBlogs().then((blogs) => {
+      setBlogs(blogs)
+    })
   }, [])
 
   useEffect(() => {
@@ -40,19 +44,23 @@ const App = () => {
 
     blogService
       .createBlog(blogObject)
-      .then(returnedBlog => {
+      .then((returnedBlog) => {
         setBlogs(blogs.concat(returnedBlog))
-        setNotificationType('success')
-        setNotificationMessage(`A new blog: ${blogObject.title} by ${blogObject.author} added successfully`)
+        dispatch({
+          type: 'showNotification',
+          payload: `A new blog: ${blogObject.title} by ${blogObject.author} added successfully`,
+        })
         setTimeout(() => {
-          setNotificationMessage(null)
+          dispatch({ type: 'hideNotification' })
         }, 5000)
       })
-      .catch(error => {
-        setNotificationType('error')
-        setNotificationMessage(error.response.data.error)
+      .catch((error) => {
+        dispatch({
+          type: 'showNotification',
+          payload: error.response.data.error,
+        })
         setTimeout(() => {
-          setNotificationMessage(null)
+          dispatch({ type: 'hideNotification' })
         }, 5000)
       })
   }
@@ -60,19 +68,23 @@ const App = () => {
   const updateLikes = async (blogId, blogObject) => {
     try {
       const updatedBlog = await blogService.updateBlog(blogId, blogObject)
-      setNotificationType('success')
-      setNotificationMessage(`The blog: ${blogObject.title} by ${blogObject.author} was liked`)
+      dispatch({
+        type: 'showNotification',
+        payload: `The blog: ${blogObject.title} by ${blogObject.author} was liked`,
+      })
       setTimeout(() => {
-        setNotificationMessage(null)
+        dispatch({ type: 'hideNotification' })
       }, 5000)
       setBlogs(
-        blogs.map((oldBlog) => oldBlog.id === blogId ? updatedBlog : oldBlog)
+        blogs.map((oldBlog) => (oldBlog.id === blogId ? updatedBlog : oldBlog))
       )
-    } catch (error){
-      setNotificationType('error')
-      setNotificationMessage('Cannot like blog')
+    } catch (error) {
+      dispatch({
+        type: 'showNotification',
+        payload: 'Cannot like blog',
+      })
       setTimeout(() => {
-        setNotificationMessage(null)
+        dispatch({ type: 'hideNotification' })
       }, 5000)
     }
   }
@@ -83,16 +95,20 @@ const App = () => {
 
       const updatedBlogList = blogs.filter((blog) => blog.id !== blogId)
       setBlogs(updatedBlogList)
-      setNotificationType('success')
-      setNotificationMessage('The blog was removed')
+      dispatch({
+        type: 'showNotification',
+        payload: 'The blog was removed',
+      })
       setTimeout(() => {
-        setNotificationMessage(null)
+        dispatch({ type: 'hideNotification' })
       }, 5000)
-    } catch (error){
-      setNotificationType('error')
-      setNotificationMessage('Cannot delete blog')
+    } catch (error) {
+      dispatch({
+        type: 'showNotification',
+        payload: 'Cannot delete blog',
+      })
       setTimeout(() => {
-        setNotificationMessage(null)
+        dispatch({ type: 'hideNotification' })
       }, 5000)
     }
   }
@@ -101,22 +117,23 @@ const App = () => {
     event.preventDefault()
     try {
       const user = await loginService.login({
-        username, password,
+        username,
+        password,
       })
 
-      window.localStorage.setItem(
-        'loggedNoteappUser', JSON.stringify(user)
-      )
+      window.localStorage.setItem('loggedNoteappUser', JSON.stringify(user))
 
       blogService.setToken(user.token)
       setUser(user)
       setUsername('')
       setPassword('')
-    } catch (exception){
-      setNotificationType('error')
-      setNotificationMessage('Wrong username or password')
+    } catch (exception) {
+      dispatch({
+        type: 'showNotification',
+        payload: 'Wrong username or password',
+      })
       setTimeout(() => {
-        setNotificationMessage(null)
+        dispatch({ type: 'hideNotification' })
       }, 5000)
     }
   }
@@ -129,40 +146,60 @@ const App = () => {
   }
 
   const loginForm = () => {
-    return(
+    return (
       <div>
         <h2>Log in to application</h2>
-        <Notification message = {notificationMessage} type = {notificationType}/>
+        <Notification />
         <form onSubmit={handleLogin}>
           <div>
             username
-            <input id='username' type="text" value={username} name="Username" onChange={ ({ target }) => setUsername(target.value) }></input>
+            <input
+              id="username"
+              type="text"
+              value={username}
+              name="Username"
+              onChange={({ target }) => setUsername(target.value)}
+            ></input>
           </div>
           <div>
             password
-            <input id='password' type="password" value={password} name="Password" onChange={ ({ target }) => setPassword(target.value) }></input>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              name="Password"
+              onChange={({ target }) => setPassword(target.value)}
+            ></input>
           </div>
-          <button id='login-button' type="submit">login</button>
+          <button id="login-button" type="submit">
+            login
+          </button>
         </form>
       </div>
     )
   }
 
   const blogList = () => {
-    return(
+    return (
       <div>
         <h2>Blogs</h2>
-        <Notification message = {notificationMessage} type = {notificationType}/>
+        <Notification />
         <p>{user.name} logged in</p>
         <button onClick={handleLogOut}>log out</button>
         <Togglable buttonLabel="New Blog" ref={blogFormRef}>
-          <BlogForm createBlog={addBlog}/>
+          <BlogForm createBlog={addBlog} />
         </Togglable>
         {blogs
           .sort((a, b) => b.likes - a.likes)
-          .map(blog =>
-            <Blog key={blog.id} blog={blog} updateLikes={updateLikes} deleteBlog={deleteBlog} user={user}/>
-          )}
+          .map((blog) => (
+            <Blog
+              key={blog.id}
+              blog={blog}
+              updateLikes={updateLikes}
+              deleteBlog={deleteBlog}
+              user={user}
+            />
+          ))}
       </div>
     )
   }
