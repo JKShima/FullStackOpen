@@ -17,11 +17,9 @@ const App = () => {
   const [notificationType, setNotificationType] = useState('')
 
   useEffect(() => {
-    blogService
-      .getAllBlogs()
-      .then(blogs => {
-        setBlogs( blogs )
-      })
+    blogService.getAllBlogs().then((blogs) => {
+      setBlogs(blogs)
+    })
   }, [])
 
   useEffect(() => {
@@ -40,15 +38,17 @@ const App = () => {
 
     blogService
       .createBlog(blogObject)
-      .then(returnedBlog => {
+      .then((returnedBlog) => {
         setBlogs(blogs.concat(returnedBlog))
         setNotificationType('success')
-        setNotificationMessage(`A new blog: ${blogObject.title} by ${blogObject.author} added successfully`)
+        setNotificationMessage(
+          `A new blog: ${blogObject.title} by ${blogObject.author} added successfully`
+        )
         setTimeout(() => {
           setNotificationMessage(null)
         }, 5000)
       })
-      .catch(error => {
+      .catch((error) => {
         setNotificationType('error')
         setNotificationMessage(error.response.data.error)
         setTimeout(() => {
@@ -61,14 +61,16 @@ const App = () => {
     try {
       const updatedBlog = await blogService.updateBlog(blogId, blogObject)
       setNotificationType('success')
-      setNotificationMessage(`The blog: ${blogObject.title} by ${blogObject.author} was liked`)
+      setNotificationMessage(
+        `The blog: ${blogObject.title} by ${blogObject.author} was liked`
+      )
       setTimeout(() => {
         setNotificationMessage(null)
       }, 5000)
       setBlogs(
-        blogs.map((oldBlog) => oldBlog.id === blogId ? updatedBlog : oldBlog)
+        blogs.map((oldBlog) => (oldBlog.id === blogId ? updatedBlog : oldBlog))
       )
-    } catch (error){
+    } catch (error) {
       setNotificationType('error')
       setNotificationMessage('Cannot like blog')
       setTimeout(() => {
@@ -88,7 +90,7 @@ const App = () => {
       setTimeout(() => {
         setNotificationMessage(null)
       }, 5000)
-    } catch (error){
+    } catch (error) {
       setNotificationType('error')
       setNotificationMessage('Cannot delete blog')
       setTimeout(() => {
@@ -101,18 +103,17 @@ const App = () => {
     event.preventDefault()
     try {
       const user = await loginService.login({
-        username, password,
+        username,
+        password,
       })
 
-      window.localStorage.setItem(
-        'loggedNoteappUser', JSON.stringify(user)
-      )
+      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
 
       blogService.setToken(user.token)
       setUser(user)
       setUsername('')
       setPassword('')
-    } catch (exception){
+    } catch (exception) {
       setNotificationType('error')
       setNotificationMessage('Wrong username or password')
       setTimeout(() => {
@@ -129,40 +130,60 @@ const App = () => {
   }
 
   const loginForm = () => {
-    return(
+    return (
       <div>
         <h2>Log in to application</h2>
-        <Notification message = {notificationMessage} type = {notificationType}/>
+        <Notification message={notificationMessage} type={notificationType} />
         <form onSubmit={handleLogin}>
           <div>
             username
-            <input id='username' type="text" value={username} name="Username" onChange={ ({ target }) => setUsername(target.value) }></input>
+            <input
+              id="username"
+              type="text"
+              value={username}
+              name="Username"
+              onChange={({ target }) => setUsername(target.value)}
+            ></input>
           </div>
           <div>
             password
-            <input id='password' type="password" value={password} name="Password" onChange={ ({ target }) => setPassword(target.value) }></input>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              name="Password"
+              onChange={({ target }) => setPassword(target.value)}
+            ></input>
           </div>
-          <button id='login-button' type="submit">login</button>
+          <button id="login-button" type="submit">
+            login
+          </button>
         </form>
       </div>
     )
   }
 
   const blogList = () => {
-    return(
+    return (
       <div>
         <h2>Blogs</h2>
-        <Notification message = {notificationMessage} type = {notificationType}/>
+        <Notification message={notificationMessage} type={notificationType} />
         <p>{user.name} logged in</p>
         <button onClick={handleLogOut}>log out</button>
         <Togglable buttonLabel="New Blog" ref={blogFormRef}>
-          <BlogForm createBlog={addBlog}/>
+          <BlogForm createBlog={addBlog} />
         </Togglable>
         {blogs
           .sort((a, b) => b.likes - a.likes)
-          .map(blog =>
-            <Blog key={blog.id} blog={blog} updateLikes={updateLikes} deleteBlog={deleteBlog} user={user}/>
-          )}
+          .map((blog) => (
+            <Blog
+              key={blog.id}
+              blog={blog}
+              updateLikes={updateLikes}
+              deleteBlog={deleteBlog}
+              user={user}
+            />
+          ))}
       </div>
     )
   }

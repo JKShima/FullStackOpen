@@ -5,7 +5,7 @@ import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 
 import blogService from './services/blogs'
-import { getBlogs } from './services/requests'
+import { getBlogs, setToken } from './services/requests'
 import loginService from './services/login'
 
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -29,7 +29,8 @@ const App = () => {
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
-      blogService.setToken(user.token)
+      console.log(user.token)
+      setToken(user.token)
     }
   }, [])
 
@@ -50,6 +51,7 @@ const App = () => {
 
   const blogsQuery = data
 
+  /*
   const addBlog = (blogObject) => {
     blogFormRef.current.toggleVisibility()
 
@@ -75,7 +77,7 @@ const App = () => {
         }, 5000)
       })
   }
-
+  */
   const updateLikes = async (blogId, blogObject) => {
     try {
       const updatedBlog = await blogService.updateBlog(blogId, blogObject)
@@ -132,9 +134,9 @@ const App = () => {
         password,
       })
 
-      window.localStorage.setItem('loggedNoteappUser', JSON.stringify(user))
+      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
 
-      blogService.setToken(user.token)
+      setToken(user.token)
       setUser(user)
       setUsername('')
       setPassword('')
@@ -198,7 +200,7 @@ const App = () => {
         <p>{user.name} logged in</p>
         <button onClick={handleLogOut}>log out</button>
         <Togglable buttonLabel="New Blog" ref={blogFormRef}>
-          <BlogForm createBlog={addBlog} />
+          <BlogForm />
         </Togglable>
         {blogsQuery
           .sort((a, b) => b.likes - a.likes)
