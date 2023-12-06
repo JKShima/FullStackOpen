@@ -5,9 +5,10 @@ import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 
 import blogService from './services/blogs'
+import { getBlogs } from './services/requests'
 import loginService from './services/login'
 
-import { useQueryClient } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNotificationDispatch } from './notificationContext'
 
 const App = () => {
@@ -19,13 +20,9 @@ const App = () => {
   //const [notificationMessage, setNotificationMessage] = useState(null)
   //const [notificationType, setNotificationType] = useState('')
 
+  const queryClient = useQueryClient()
   const dispatch = useNotificationDispatch()
-
-  useEffect(() => {
-    blogService.getAllBlogs().then((blogs) => {
-      setBlogs(blogs)
-    })
-  }, [])
+  const blogFormRef = useRef()
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -36,7 +33,22 @@ const App = () => {
     }
   }, [])
 
-  const blogFormRef = useRef()
+  const { isLoading, isError, data, error } = useQuery({
+    queryKey: ['blogs'],
+    queryFn: getBlogs,
+    retry: 1,
+    refetchOnWindowFocus: false,
+  })
+
+  if (isLoading) {
+    return <div>loading data...</div>
+  }
+
+  if (isError) {
+    return <span>Error: {error.message}</span>
+  }
+
+  const blogsQuery = data
 
   const addBlog = (blogObject) => {
     blogFormRef.current.toggleVisibility()
@@ -188,7 +200,7 @@ const App = () => {
         <Togglable buttonLabel="New Blog" ref={blogFormRef}>
           <BlogForm createBlog={addBlog} />
         </Togglable>
-        {blogs
+        {blogsQuery
           .sort((a, b) => b.likes - a.likes)
           .map((blog) => (
             <Blog
