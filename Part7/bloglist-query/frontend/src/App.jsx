@@ -7,7 +7,7 @@ import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import { useNotificationDispatch } from './notificationContext'
 
 const App = () => {
@@ -19,7 +19,6 @@ const App = () => {
   //const [notificationMessage, setNotificationMessage] = useState(null)
   //const [notificationType, setNotificationType] = useState('')
 
-  const queryClient = useQueryClient()
   const dispatch = useNotificationDispatch()
 
   useEffect(() => {
