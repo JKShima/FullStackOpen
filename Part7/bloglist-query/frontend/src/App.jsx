@@ -29,7 +29,6 @@ const App = () => {
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
-      console.log(user.token)
       setToken(user.token)
     }
   }, [])
@@ -51,33 +50,6 @@ const App = () => {
 
   const blogsQuery = data
 
-  /*
-  const addBlog = (blogObject) => {
-    blogFormRef.current.toggleVisibility()
-
-    blogService
-      .createBlog(blogObject)
-      .then((returnedBlog) => {
-        setBlogs(blogs.concat(returnedBlog))
-        dispatch({
-          type: 'showNotification',
-          payload: `A new blog: ${blogObject.title} by ${blogObject.author} added successfully`,
-        })
-        setTimeout(() => {
-          dispatch({ type: 'hideNotification' })
-        }, 5000)
-      })
-      .catch((error) => {
-        dispatch({
-          type: 'showNotification',
-          payload: error.response.data.error,
-        })
-        setTimeout(() => {
-          dispatch({ type: 'hideNotification' })
-        }, 5000)
-      })
-  }
-  */
   const updateLikes = async (blogId, blogObject) => {
     try {
       const updatedBlog = await blogService.updateBlog(blogId, blogObject)
