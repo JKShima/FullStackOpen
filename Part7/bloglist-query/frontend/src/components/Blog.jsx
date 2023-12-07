@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { useQueryClient, useMutation } from '@tanstack/react-query'
-import { updateBlog } from '../services/requests'
+import { updateBlog, deleteBlog } from '../services/requests'
 import { useNotificationDispatch } from '../notificationContext'
 
-const Blog = ({ blog, deleteBlog, user }) => {
+const Blog = ({ blog, user }) => {
   const queryClient = useQueryClient()
   const dispatch = useNotificationDispatch()
 
@@ -49,10 +49,31 @@ const Blog = ({ blog, deleteBlog, user }) => {
     }, 5000)
   }
 
-  const handleDelete = () => {
+  const deleteMutation = useMutation({
+    mutationFn: deleteBlog,
+    onSuccess: () => {
+      queryClient.invalidateQueries('blogs')
+    },
+    onError: () => {
+      dispatch({ type: 'showNotification', payload: 'Could not delete blog' })
+      setTimeout(() => {
+        dispatch({ type: 'hideNotification' })
+      }, 5000)
+    },
+  })
+
+  const handleDelete = async (blog) => {
     if (window.confirm(`Delete blog ${blog.title} by ${blog.author}`)) {
-      deleteBlog(blog.id)
+      deleteMutation.mutate(blog)
     }
+
+    await dispatch({
+      type: 'showNotification',
+      payload: 'The blog was removed',
+    })
+    setTimeout(() => {
+      dispatch({ type: 'hideNotification' })
+    }, 5000)
   }
 
   return (
@@ -73,7 +94,7 @@ const Blog = ({ blog, deleteBlog, user }) => {
         </div>
         <div>{blog.user !== null && blog.user.name}</div>
         {blog.user.username === user.username && (
-          <button onClick={handleDelete}>delete</button>
+          <button onClick={() => handleDelete(blog)}>delete</button>
         )}
       </div>
     </div>
