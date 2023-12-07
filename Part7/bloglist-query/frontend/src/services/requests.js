@@ -21,3 +21,9 @@ export const createBlog = async (newBlog) => {
   const response = await axios.post(baseUrl, newBlog, config)
   return response.data
 }
+
+export const updateBlog = async (updatedBlog) => {
+  //console.log(updatedBlog.id)
+  const response = await axios.put(`${baseUrl}/${updatedBlog.id}`, updatedBlog)
+  return response.data
+}

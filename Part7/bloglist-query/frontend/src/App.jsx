@@ -50,30 +50,6 @@ const App = () => {
 
   const blogsQuery = data
 
-  const updateLikes = async (blogId, blogObject) => {
-    try {
-      const updatedBlog = await blogService.updateBlog(blogId, blogObject)
-      dispatch({
-        type: 'showNotification',
-        payload: `The blog: ${blogObject.title} by ${blogObject.author} was liked`,
-      })
-      setTimeout(() => {
-        dispatch({ type: 'hideNotification' })
-      }, 5000)
-      setBlogs(
-        blogs.map((oldBlog) => (oldBlog.id === blogId ? updatedBlog : oldBlog))
-      )
-    } catch (error) {
-      dispatch({
-        type: 'showNotification',
-        payload: 'Cannot like blog',
-      })
-      setTimeout(() => {
-        dispatch({ type: 'hideNotification' })
-      }, 5000)
-    }
-  }
-
   const deleteBlog = async (blogId) => {
     try {
       await blogService.deleteBlog(blogId)
@@ -180,7 +156,6 @@ const App = () => {
             <Blog
               key={blog.id}
               blog={blog}
-              updateLikes={updateLikes}
               deleteBlog={deleteBlog}
               user={user}
             />
