@@ -50,30 +50,6 @@ const App = () => {
 
   const blogsQuery = data
 
-  const deleteBlog = async (blogId) => {
-    try {
-      await blogService.deleteBlog(blogId)
-
-      const updatedBlogList = blogs.filter((blog) => blog.id !== blogId)
-      setBlogs(updatedBlogList)
-      dispatch({
-        type: 'showNotification',
-        payload: 'The blog was removed',
-      })
-      setTimeout(() => {
-        dispatch({ type: 'hideNotification' })
-      }, 5000)
-    } catch (error) {
-      dispatch({
-        type: 'showNotification',
-        payload: 'Cannot delete blog',
-      })
-      setTimeout(() => {
-        dispatch({ type: 'hideNotification' })
-      }, 5000)
-    }
-  }
-
   const handleLogin = async (event) => {
     event.preventDefault()
     try {
