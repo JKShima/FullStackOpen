@@ -1,34 +1,30 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useContext } from 'react'
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 
-import blogService from './services/blogs'
 import { getBlogs, setToken } from './services/requests'
 import loginService from './services/login'
 
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNotificationDispatch } from './notificationContext'
+import UserContext from './userContext'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
-  const [user, setUser] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
-  //const [notificationMessage, setNotificationMessage] = useState(null)
-  //const [notificationType, setNotificationType] = useState('')
-
-  const queryClient = useQueryClient()
   const dispatch = useNotificationDispatch()
   const blogFormRef = useRef()
+
+  const [user, userDispatch] = useContext(UserContext)
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      setUser(user)
+      userDispatch({ type: 'setUser', payload: user })
       setToken(user.token)
     }
   }, [])
@@ -61,9 +57,8 @@ const App = () => {
       window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
 
       setToken(user.token)
-      setUser(user)
-      setUsername('')
-      setPassword('')
+
+      userDispatch({ type: 'setUser', payload: user })
     } catch (exception) {
       dispatch({
         type: 'showNotification',
@@ -77,9 +72,7 @@ const App = () => {
 
   const handleLogOut = () => {
     window.localStorage.clear()
-    setUser(null)
-    setUsername('')
-    setPassword('')
+    userDispatch({ type: 'clearUser' })
   }
 
   const loginForm = () => {

@@ -36,3 +36,8 @@ export const deleteBlog = async (deletedBlog) => {
   const response = await axios.delete(`${baseUrl}/${deletedBlog.id}`, config)
   return response.data
 }
+
+export const login = async (credentials) => {
+  const response = await axios.post(`/api/login`, credentials)
+  return response.data
+}
