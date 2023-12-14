@@ -12,6 +12,7 @@ const mongoose = require('mongoose')
 
 mongoose.set('strictQuery', false)
 
+// Connecting to DB
 logger.info('connecting to ', config.MONGODB_URI)
 
 mongoose
