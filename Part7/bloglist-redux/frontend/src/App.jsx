@@ -1,4 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
+import { setNotification } from './reducers/notificationReducer'
+import { useDispatch } from 'react-redux'
+
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
@@ -15,6 +18,8 @@ const App = () => {
 
   const [notificationMessage, setNotificationMessage] = useState(null)
   const [notificationType, setNotificationType] = useState('')
+
+  const dispatch = useDispatch()
 
   useEffect(() => {
     blogService.getAllBlogs().then((blogs) => {
@@ -40,42 +45,32 @@ const App = () => {
       .createBlog(blogObject)
       .then((returnedBlog) => {
         setBlogs(blogs.concat(returnedBlog))
-        setNotificationType('success')
-        setNotificationMessage(
-          `A new blog: ${blogObject.title} by ${blogObject.author} added successfully`
+        dispatch(
+          setNotification(
+            `A new blog: ${blogObject.title} by ${blogObject.author} added successfully`,
+            5
+          )
         )
-        setTimeout(() => {
-          setNotificationMessage(null)
-        }, 5000)
       })
       .catch((error) => {
-        setNotificationType('error')
-        setNotificationMessage(error.response.data.error)
-        setTimeout(() => {
-          setNotificationMessage(null)
-        }, 5000)
+        dispatch(setNotification(error.response.data.error))
       })
   }
 
   const updateLikes = async (blogId, blogObject) => {
     try {
       const updatedBlog = await blogService.updateBlog(blogId, blogObject)
-      setNotificationType('success')
-      setNotificationMessage(
-        `The blog: ${blogObject.title} by ${blogObject.author} was liked`
+      dispatch(
+        setNotification(
+          `The blog: ${blogObject.title} by ${blogObject.author} was liked`,
+          5
+        )
       )
-      setTimeout(() => {
-        setNotificationMessage(null)
-      }, 5000)
       setBlogs(
         blogs.map((oldBlog) => (oldBlog.id === blogId ? updatedBlog : oldBlog))
       )
     } catch (error) {
-      setNotificationType('error')
-      setNotificationMessage('Cannot like blog')
-      setTimeout(() => {
-        setNotificationMessage(null)
-      }, 5000)
+      dispatch(setNotification('Cannot like blog', 5))
     }
   }
 
@@ -85,17 +80,9 @@ const App = () => {
 
       const updatedBlogList = blogs.filter((blog) => blog.id !== blogId)
       setBlogs(updatedBlogList)
-      setNotificationType('success')
-      setNotificationMessage('The blog was removed')
-      setTimeout(() => {
-        setNotificationMessage(null)
-      }, 5000)
+      dispatch(setNotification('The blog was removed', 5))
     } catch (error) {
-      setNotificationType('error')
-      setNotificationMessage('Cannot delete blog')
-      setTimeout(() => {
-        setNotificationMessage(null)
-      }, 5000)
+      dispatch(setNotification('Cannot delete blog', 5))
     }
   }
 
@@ -114,11 +101,7 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
-      setNotificationType('error')
-      setNotificationMessage('Wrong username or password')
-      setTimeout(() => {
-        setNotificationMessage(null)
-      }, 5000)
+      dispatch(setNotification('Wrong username or password', 5))
     }
   }
 
