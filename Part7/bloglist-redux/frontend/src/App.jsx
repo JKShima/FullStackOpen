@@ -1,14 +1,15 @@
 import { useState, useEffect, useRef } from 'react'
 import { setNotification } from './reducers/notificationReducer'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
-import Blog from './components/Blog'
-import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
+import BlogForm from './components/BlogForm'
+import Blog from './components/Blog'
 
 import blogService from './services/blogs'
 import loginService from './services/login'
+import { initializeBlogs } from './reducers/blogReducer'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -16,16 +17,23 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
-  const [notificationMessage, setNotificationMessage] = useState(null)
-  const [notificationType, setNotificationType] = useState('')
-
   const dispatch = useDispatch()
 
+  /*
   useEffect(() => {
     blogService.getAllBlogs().then((blogs) => {
       setBlogs(blogs)
     })
   }, [])
+  */
+
+  useEffect(() => {
+    dispatch(initializeBlogs())
+  }, [dispatch])
+
+  const blogsReducer = useSelector((state) => {
+    return state.blogs.slice().sort((a, b) => b.votes - a.votes)
+  })
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -116,7 +124,7 @@ const App = () => {
     return (
       <div>
         <h2>Log in to application</h2>
-        <Notification message={notificationMessage} type={notificationType} />
+        <Notification />
         <form onSubmit={handleLogin}>
           <div>
             username
@@ -150,23 +158,21 @@ const App = () => {
     return (
       <div>
         <h2>Blogs</h2>
-        <Notification message={notificationMessage} type={notificationType} />
+        <Notification />
         <p>{user.name} logged in</p>
         <button onClick={handleLogOut}>log out</button>
         <Togglable buttonLabel="New Blog" ref={blogFormRef}>
           <BlogForm createBlog={addBlog} />
         </Togglable>
-        {blogs
-          .sort((a, b) => b.likes - a.likes)
-          .map((blog) => (
-            <Blog
-              key={blog.id}
-              blog={blog}
-              updateLikes={updateLikes}
-              deleteBlog={deleteBlog}
-              user={user}
-            />
-          ))}
+        {blogsReducer.map((blog) => (
+          <Blog
+            key={blog.id}
+            blog={blog}
+            updateLikes={updateLikes}
+            deleteBlog={deleteBlog}
+            user={user}
+          />
+        ))}
       </div>
     )
   }
