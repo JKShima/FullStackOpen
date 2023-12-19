@@ -19,14 +19,6 @@ const App = () => {
 
   const dispatch = useDispatch()
 
-  /*
-  useEffect(() => {
-    blogService.getAllBlogs().then((blogs) => {
-      setBlogs(blogs)
-    })
-  }, [])
-  */
-
   useEffect(() => {
     dispatch(initializeBlogs())
   }, [dispatch])
