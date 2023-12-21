@@ -8,6 +8,10 @@ const blogSlice = createSlice({
     setBlogs(state, action) {
       return action.payload
     },
+
+    appendBlog(state, action) {
+      state.push(action.payload)
+    },
   },
 })
 
@@ -18,5 +22,12 @@ export const initializeBlogs = () => {
   }
 }
 
-export const { setBlogs } = blogSlice.actions
+export const createBlog = (content) => {
+  return async (dispatch) => {
+    const newBlog = await blogService.createBlog(content)
+    dispatch(appendBlog(newBlog))
+  }
+}
+
+export const { setBlogs, appendBlog } = blogSlice.actions
 export default blogSlice.reducer
