@@ -1,23 +1,34 @@
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
+import { createBlog } from '../reducers/blogReducer'
+import { setNotification } from '../reducers/notificationReducer'
 
 const BlogForm = ({ createBlog }) => {
   const [newTitle, setNewTitle] = useState('')
   const [newAuthor, setNewAuthor] = useState('')
   const [newUrl, setNewUrl] = useState('')
 
-  const addBlog = (event) => {
+  const dispatch = useDispatch()
+
+  const addBlog = async (event) => {
     event.preventDefault()
 
-    createBlog({
-      title: newTitle,
-      author: newAuthor,
-      url: newUrl,
-    })
+    const title = event.target.title.value
+    const author = event.target.author.value
+    const url = event.target.url.value
 
-    setNewTitle('')
-    setNewAuthor('')
-    setNewUrl('')
+    event.target.title.value = ''
+    event.target.author.value = ''
+    event.target.url.value = ''
+
+    const createdBlog = {
+      title: title,
+      author: author,
+      url: url,
+    }
+
+    dispatch(createBlog(createdBlog))
+    dispatch(setNotification(`A new blog ${title} by ${author} was added`, 5))
   }
 
   return (
@@ -27,7 +38,7 @@ const BlogForm = ({ createBlog }) => {
         <div>
           Title:
           <input
-            id="title"
+            name="title"
             value={newTitle}
             onChange={(event) => setNewTitle(event.target.value)}
             placeholder="write blog title here"
@@ -36,7 +47,7 @@ const BlogForm = ({ createBlog }) => {
         <div>
           Author:
           <input
-            id="author"
+            name="author"
             value={newAuthor}
             onChange={(event) => setNewAuthor(event.target.value)}
             placeholder="write blog author here"
@@ -45,7 +56,7 @@ const BlogForm = ({ createBlog }) => {
         <div>
           Url:
           <input
-            id="url"
+            name="url"
             value={newUrl}
             onChange={(event) => setNewUrl(event.target.value)}
             placeholder="write blog url here"
