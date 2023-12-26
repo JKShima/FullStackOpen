@@ -4,9 +4,9 @@ import { createBlog } from '../reducers/blogReducer'
 import { setNotification } from '../reducers/notificationReducer'
 
 const BlogForm = ({ createBlog }) => {
-  const [newTitle, setNewTitle] = useState('')
-  const [newAuthor, setNewAuthor] = useState('')
-  const [newUrl, setNewUrl] = useState('')
+  //const [newTitle, setNewTitle] = useState('')
+  //const [newAuthor, setNewAuthor] = useState('')
+  //const [newUrl, setNewUrl] = useState('')
 
   const dispatch = useDispatch()
 
