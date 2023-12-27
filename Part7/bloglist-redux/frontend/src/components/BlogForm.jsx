@@ -22,6 +22,7 @@ const BlogForm = () => {
       url: url,
     }
 
+    // dispatch
     dispatch(createBlog(createdBlog))
     dispatch(setNotification(`A new blog ${title} by ${author} was added`, 5))
   }
